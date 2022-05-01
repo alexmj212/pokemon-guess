@@ -22,18 +22,18 @@ const PokemonDescription: React.FC<PokemonDescriptionProps> = ({ pokemonSpecies 
         .map((entry) => {
           return {
             ...entry,
-            flavor_text: entry.flavor_text.replace(nameRegEx, "it"),
+            flavor_text: entry.flavor_text.replace(nameRegEx, "It"),
           };
         });
       const randomFlavorText = flavorEntries[
         Math.floor(Math.random() * flavorEntries.length)
-      ].flavor_text.replace("", "");
+      ].flavor_text.replace("", " ");
       setDescription(randomFlavorText);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className="min-h-24 flex items-center justify-center">
-      {description && <span className="text-2xl text-center capitalize">{description}</span>}
+      {description && <span className="text-2xl text-center">{description}</span>}
     </div>
   );
 };
