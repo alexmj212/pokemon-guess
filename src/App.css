@@ -1,38 +1,47 @@
-.App {
-  text-align: center;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  @apply h-full;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+body {
+  @apply h-full;
+  @apply bg-gray-100;
+  @apply dark:text-white dark:bg-gray-900;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+#root {
+  @apply h-full;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+.button-base {
+  @apply flex justify-center items-center;
+  @apply rounded-md;
+  @apply border-2 border-transparent;
+  @apply hover:shadow-md;
+  @apply hover:border-slate-500 dark:hover:border-slate-100;
+  @apply disabled:opacity-30 hover:disabled:border-slate-400;
+  @apply select-none;
 }
 
-.App-link {
-  color: #61dafb;
+.button {
+  @apply button-base;
+  @apply text-base rounded-md font-bold;
+  @apply active:scale-95 active:shadow active:border-2 active:border-slate-300 dark:active:border-slate-500;
+  @apply m-[2px] px-1;
+  @apply md:px-4;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.button-outline {
+  @apply button;
+  @apply border-slate-300 dark:border-slate-500;
+  @apply py-1 md:px-4;
+}
+
+.button-positive {
+  @apply button;
+  @apply bg-green-400 dark:bg-green-700;
+  @apply py-1 md:px-4;
 }
