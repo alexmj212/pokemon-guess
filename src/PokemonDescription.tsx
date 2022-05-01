@@ -32,7 +32,7 @@ const PokemonDescription: React.FC<PokemonDescriptionProps> = ({ pokemon }) => {
       setDescription(randomFlavorText);
     };
     fetchPokemon();
-  }, []);
+  }, [pokemon]);
 
   return (
     <div className="min-h-[20px] flex items-center justify-center">
