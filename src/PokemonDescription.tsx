@@ -1,6 +1,5 @@
 import PokeAPI, {
   INamedApiResource,
-  IPokemon,
   IPokemonSpecies,
 } from "pokeapi-typescript";
 import React, { useEffect, useState } from "react";
