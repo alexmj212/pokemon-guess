@@ -1,18 +1,17 @@
-import PokeAPI, {
-  INamedApiResource,
+import {
+  IPokemon,
   IPokemonSpecies,
 } from "pokeapi-typescript";
 import React, { useEffect, useState } from "react";
 
 type PokemonDescriptionProps = {
-  pokemon: INamedApiResource<IPokemonSpecies>;
+  pokemon: IPokemon;
+  pokemonSpecies: IPokemonSpecies;
 };
 
-const PokemonDescription: React.FC<PokemonDescriptionProps> = ({ pokemon }) => {
+const PokemonDescription: React.FC<PokemonDescriptionProps> = ({ pokemonSpecies }) => {
   const [description, setDescription] = useState<string>();
   useEffect(() => {
-    const fetchPokemon = async () => {
-      const pokemonSpecies = await PokeAPI.PokemonSpecies.resolve(pokemon.name);
       const nameRegEx = new RegExp(pokemonSpecies.name, "ig");
       const flavorEntries = pokemonSpecies.flavor_text_entries
         .filter((entry) => entry.language.name === "en")
@@ -30,12 +29,10 @@ const PokemonDescription: React.FC<PokemonDescriptionProps> = ({ pokemon }) => {
         Math.floor(Math.random() * flavorEntries.length)
       ].flavor_text.replace("", "");
       setDescription(randomFlavorText);
-    };
-    fetchPokemon();
-  }, [pokemon]);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <div className="min-h-[20px] flex items-center justify-center">
+    <div className="min-h-24 flex items-center justify-center">
       {description && <span className="text-2xl text-center capitalize">{description}</span>}
     </div>
   );

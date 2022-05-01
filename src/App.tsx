@@ -11,11 +11,9 @@ const App = () => {
   const [pokemonList, setPokemonList] = useState<
     INamedApiResource<IPokemonSpecies>[]
   >([]);
-  const [randomPokemon, setRandomPokemon] =
-    useState<INamedApiResource<IPokemonSpecies>>();
-  const [randomId, setRandomId] = useState<number>(0);
-
-  const [revealedPokemon, setRevealedPokemon] = useState<IPokemon>();
+  const [randomPokemonSpecies, setRandomPokemonSpecies] =
+    useState<IPokemonSpecies>();
+  const [randomPokemon, setRandomPokemon] = useState<IPokemon>();
 
   const [showPokemon, setShowPokemon] = useState<boolean>(false);
 
@@ -24,77 +22,81 @@ const App = () => {
   };
 
   useEffect(() => {
-    PokeAPI.PokemonSpecies.listAll(true).then((pokemon) => {
+    PokeAPI.PokemonSpecies.listAll().then((pokemon) => {
       setPokemonList(pokemon.results);
     });
-  }, []);
+  }, []); // eslint-disable react-hooks/exhaustive-deps
+
+  const genRandomPokemon = () => {
+    const ran = generateRandomNumber(pokemonList.length);
+    PokeAPI.PokemonSpecies.resolve(pokemonList[ran].name).then(
+      (pokemonSpecies) => {
+        setRandomPokemonSpecies(pokemonSpecies);
+        PokeAPI.Pokemon.resolve(pokemonSpecies.id).then((pokemon) => {
+          setRandomPokemon(pokemon);
+        });
+      }
+    );
+  };
 
   useEffect(() => {
     if (pokemonList.length > 0) {
-      setRandomId(generateRandomNumber(pokemonList.length));
+      genRandomPokemon();
     }
-  }, [pokemonList]);
-
-  useEffect(() => {
-    if (randomId && pokemonList.length > 0) {
-      setRandomPokemon(pokemonList[randomId]);
-    }
-  }, [pokemonList, randomId]);
+  }, [pokemonList]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const reset = () => {
-    setRandomId(generateRandomNumber(pokemonList.length));
+    genRandomPokemon();
     setShowPokemon(false);
-    setRevealedPokemon({} as IPokemon);
-  };
-
-  const revealPokemon = (name: string) => {
-    setShowPokemon(true);
-    PokeAPI.Pokemon.resolve(name).then((pokemon) => {
-      setRevealedPokemon(pokemon);
-    });
   };
 
   return (
     <div className="w-full h-full">
       <div className="flex flex-col justify-center w-full h-full max-w-4xl mx-auto py-2 px-2 sm:px-4">
         <h1 className="text-center text-4xl font-bold py-8">{`Who's that Pokémon?`}</h1>
-        {randomPokemon && (
+        {randomPokemon && randomPokemonSpecies && (
           <>
             <PokemonDescription
               key={randomPokemon.name}
               pokemon={randomPokemon}
+              pokemonSpecies={randomPokemonSpecies}
             />
 
             <div className="text-center h-[200px] flex flex-col justify-center items-center">
               {showPokemon &&
-              revealedPokemon &&
-              revealedPokemon.sprites &&
-              revealedPokemon.sprites.front_default ? (
+              randomPokemon &&
+              randomPokemon.sprites &&
+              randomPokemon.sprites.front_default ? (
                 <>
                   <div className="text-4xl font-bold capitalize">
-                    {revealedPokemon.name}
+                    {randomPokemon.name}
                   </div>
                   <img
-                    src={revealedPokemon.sprites.front_default}
-                    alt={revealedPokemon.name}
+                    src={randomPokemon.sprites.front_default}
+                    alt={randomPokemon.name}
                   />
                 </>
               ) : (
                 <div className="text-4xl font-bold text-slate-500">???</div>
               )}
             </div>
-            <div className="flex justify-center">
-              {" "}
+            <div className="h-48 flex flex-col items-center">
               <button
                 disabled={showPokemon}
                 className="button-positive"
-                onClick={() => revealPokemon(randomPokemon?.name)}
+                onClick={() => setShowPokemon(true)}
               >
                 Reveal Pokemon
               </button>
-              <button className="button-outline" onClick={reset}>
-                Try Another
-              </button>
+              {showPokemon && (
+                <button
+                  disabled={!randomPokemon}
+                  className="button-outline"
+                  onClick={reset}
+                >
+                  Try Another
+                </button>
+              )}
             </div>
           </>
         )}
