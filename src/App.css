@@ -2,8 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('http://fonts.cdnfonts.com/css/pokemon-solid');
-@import url('http://fonts.cdnfonts.com/css/superhelio');
+@import url('https://fonts.cdnfonts.com/css/pokemon-solid');
+@import url('https://fonts.cdnfonts.com/css/superhelio');
 
 html {
   @apply h-full;
