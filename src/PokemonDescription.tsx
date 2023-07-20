@@ -1,9 +1,9 @@
-import { IPokemon, IPokemonSpecies } from "pokeapi-typescript";
+import { Pokemon, PokemonSpecies } from "pokenode-ts";
 import React, { useEffect, useState } from "react";
 
 type PokemonDescriptionProps = {
-  pokemon: IPokemon;
-  pokemonSpecies: IPokemonSpecies;
+  pokemon: Pokemon;
+  pokemonSpecies: PokemonSpecies;
 };
 
 const PokemonDescription: React.FC<PokemonDescriptionProps> = ({
@@ -29,13 +29,16 @@ const PokemonDescription: React.FC<PokemonDescriptionProps> = ({
       Math.floor(Math.random() * flavorEntries.length)
     ].flavor_text.replace("", " ");
     setDescription(randomFlavorText);
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [pokemon, pokemonSpecies]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className="min-h-[150px] flex items-center justify-center">
       {description && (
         <div className="flex flex-col">
           <span className="pokedex-description">{description}</span>
+          <div className="pokedex-description flex flex-row justify-center py-4 gap-4 uppercase">
+            <div>Gen: {pokemonSpecies?.generation?.name.split("-")[1]}</div>
+          </div>
           <div className="flex flex-row justify-center py-4 gap-4">
             {pokemon?.types.map((type, index) => {
               return (

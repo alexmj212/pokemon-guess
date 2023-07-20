@@ -1,33 +1,79 @@
 import "./App.css";
-import PokeAPI, {
-  INamedApiResource,
-  IPokemon,
-  IPokemonSpecies,
-} from "pokeapi-typescript";
 import { useEffect, useState } from "react";
+import {
+  MainClient,
+  NamedAPIResource,
+  Pokemon,
+  PokemonSpecies,
+} from "pokenode-ts";
 import PokemonDescription from "./PokemonDescription";
 import ReactGA from "react-ga4";
 
 const App = () => {
-  const [pokemonList, setPokemonList] = useState<
-    INamedApiResource<IPokemonSpecies>[]
-  >([]);
-  const [randomPokemonSpecies, setRandomPokemonSpecies] =
-    useState<IPokemonSpecies>();
-  const [randomPokemon, setRandomPokemon] = useState<IPokemon>();
+  const [generationList, setGenerationList] = useState<NamedAPIResource[]>([]);
+  const [generationFilters, setGenerationFilters] = useState<number[]>([]);
+
+  const [pokemon, setPokemon] = useState<Pokemon>();
+  const [pokemonSpecies, setPokemonSpecies] = useState<PokemonSpecies>();
 
   const [showPokemon, setShowPokemon] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
 
   const [buildVersion, setBuildVersion] = useState<string>();
 
+  const PokeAPI = new MainClient();
+
   const generateRandomNumber = (max: number) => {
-    return Math.floor(Math.random() * max);
+    return Math.floor(Math.random() * max) + 1;
+  };
+
+  const getGenerationList = () => {
+    PokeAPI.game.listGenerations().then((generation) => {
+      setGenerationList(generation.results);
+      setGenerationFilters(generation.results.map((gen, index) => index + 1));
+    });
+  };
+
+  const getRandomGenerationSpecies = (filterList: number[]) => {
+    const randomGen = generateRandomNumber(filterList.length);
+    PokeAPI.game.getGenerationById(randomGen).then((generation) => {
+      getRandomSpecies(generation.pokemon_species);
+    });
+  };
+
+  const getRandomSpecies = (speciesList: NamedAPIResource[]) => {
+    const randomSpecies = generateRandomNumber(speciesList.length);
+    PokeAPI.pokemon
+      .getPokemonSpeciesByName(speciesList[randomSpecies].name)
+      .then((species) => {
+        setPokemonSpecies(species);
+      })
+      .then(() => {
+        PokeAPI.pokemon
+          .getPokemonByName(speciesList[randomSpecies].name)
+          .then((pokemon) => {
+            setPokemon(pokemon);
+          });
+      })
+      .finally(() => setTimeout(() => setLoading(false), 1000));
+  };
+
+  const initializeGame = () => {
+    setLoading(true);
+    getGenerationList();
   };
 
   useEffect(() => {
-    PokeAPI.PokemonSpecies.listAll().then((pokemon) => {
-      setPokemonList(pokemon.results);
-    });
+    initializeGame();
+  }, []);
+
+  useEffect(() => {
+    if (generationList.length > 0 && generationFilters.length > 0) {
+      getRandomGenerationSpecies(generationFilters);
+    }
+  }, [generationList, generationFilters]);
+
+  useEffect(() => {
     const ver =
       document
         .querySelector('meta[name="build-version"]')
@@ -40,26 +86,9 @@ const App = () => {
     });
   }, []); // eslint-disable react-hooks/exhaustive-deps
 
-  const genRandomPokemon = () => {
-    const ran = generateRandomNumber(pokemonList.length);
-    PokeAPI.PokemonSpecies.resolve(pokemonList[ran].name).then(
-      (pokemonSpecies) => {
-        setRandomPokemonSpecies(pokemonSpecies);
-        PokeAPI.Pokemon.resolve(pokemonSpecies.id).then((pokemon) => {
-          setRandomPokemon(pokemon);
-        });
-      }
-    );
-  };
-
-  useEffect(() => {
-    if (pokemonList.length > 0) {
-      genRandomPokemon();
-    }
-  }, [pokemonList]); // eslint-disable-line react-hooks/exhaustive-deps
-
   const reset = () => {
-    genRandomPokemon();
+    setLoading(true);
+    getRandomGenerationSpecies(generationFilters);
     setShowPokemon(false);
   };
 
@@ -68,23 +97,24 @@ const App = () => {
       <div className="flex flex-col w-full h-full max-w-xl mx-auto py-2 px-2 sm:px-4">
         <div>
           <h1 className="page-title">{`Who's that PoKéMoN?`}</h1>
-          {randomPokemon && randomPokemonSpecies && (
+          {loading && <>Loading...</>}
+          {!loading && pokemon && pokemonSpecies && (
             <>
               <PokemonDescription
-                key={randomPokemon.name}
-                pokemon={randomPokemon}
-                pokemonSpecies={randomPokemonSpecies}
+                key={pokemon.name}
+                pokemon={pokemon}
+                pokemonSpecies={pokemonSpecies}
               />
 
               <div className="text-center min-h-[250px] md:min-h-[450px] flex flex-col justify-center items-center">
                 {showPokemon &&
-                randomPokemon &&
-                randomPokemon.sprites &&
-                randomPokemon.sprites.front_default ? (
+                pokemon &&
+                pokemon.sprites &&
+                pokemon.sprites.front_default ? (
                   <>
-                    <div className="text-4xl font-bold capitalize">
+                    <div className="pokemon-name text-4xl font-bold capitalize">
                       {
-                        randomPokemonSpecies.names.filter(
+                        pokemonSpecies.names.filter(
                           (entry) => entry.language.name === "en"
                         )[0].name
                       }
@@ -94,15 +124,19 @@ const App = () => {
                       src={
                         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                         // @ts-ignore
-                        randomPokemon.sprites["other"]["official-artwork"][
+                        pokemon.sprites["other"]["official-artwork"][
                           "front_default"
-                        ] ?? randomPokemon.sprites.front_default
+                        ] ?? pokemon.sprites.front_default
                       }
-                      alt={randomPokemon.name}
+                      alt={pokemon.name}
                     />
                   </>
                 ) : (
-                  <div className="text-8xl font-bold text-slate-500">???</div>
+                    <div className="poke_box">
+                      <div className="pokeball" onClick={() => setShowPokemon(true)}>
+                        <div className="pokeball__button"></div>
+                      </div>
+                    </div>
                 )}
               </div>
               <div className="flex flex-col items-center">
