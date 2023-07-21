@@ -187,22 +187,28 @@ const App = () => {
             </div>
           )}
         </div>
-        <div className="flex flex-initial flex-wrap flex-row justify-between border-t-2 border-slate-300 dark:border-slate-500 mt-4 py-4 text-xs">
+        <div className="flex flex-initial flex-wrap flex-row justify-between items-center border-t-2 border-slate-300 dark:border-slate-500 mt-4 py-4 text-xs">
           <div className="flex flex-auto flex-row space-x-4">
             <a href="https://alexmj212.dev" className="underline">
               alexmj212.dev
             </a>
           </div>
-          <div className="flex flex-auto flex-row space-x-4 justify-end items-end">
+          <div className="flex flex-auto flex-row space-x-4 justify-end items-baseline">
             <span id="build">Build: {buildVersion}</span>
             <a className="underline" href="https://pokeapi.co/">
-              Data Provided by PokeApi
+              Data Provided by PokéApi
             </a>
             <a
               href="https://www.github.com/alexmj212/pokemon-guess"
               className="underline"
             >
               Source
+            </a>
+            <a
+              href="https://ko-fi.com/exogenesis_"
+              className="button-info small"
+            >
+              ❤️&nbsp;Buy me a coffee 
             </a>
           </div>
         </div>
