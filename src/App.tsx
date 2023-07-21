@@ -101,8 +101,8 @@ const App = () => {
   const reset = () => {
     setLoading(true);
     getRandomGenerationSpecies(generationFilters);
-    setPokemon({} as any);
-    setPokemonSpecies({} as any);
+    setPokemon(undefined);
+    setPokemonSpecies(undefined);
     setShowPokemon(false);
   };
 
