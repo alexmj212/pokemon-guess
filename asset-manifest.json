@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/pokemon-guess/static/css/main.229a7135.css",
+    "main.js": "/pokemon-guess/static/js/main.a947bf5e.js",
+    "static/js/27.233197c0.chunk.js": "/pokemon-guess/static/js/27.233197c0.chunk.js",
+    "static/media/pokemon-bg.png": "/pokemon-guess/static/media/pokemon-bg.f0c04771ebe23767ce2b.png",
+    "index.html": "/pokemon-guess/index.html"
+  },
+  "entrypoints": [
+    "static/css/main.229a7135.css",
+    "static/js/main.a947bf5e.js"
+  ]
+}
